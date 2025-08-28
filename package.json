@@ -1,0 +1,27 @@
+{
+  "name": "todays_universe",
+  "version": "1.0.0",
+  "description": "Three.js를 이용해 3D 우주 공간을 구현하고, 오늘의 NASA 우주 사진과 행성/궤도 시뮬레이션을 보여주는 프로젝트",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeong922/today-s_universe.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeong922/today-s_universe/issues"
+  },
+  "homepage": "https://github.com/jeong922/today-s_universe#readme",
+  "dependencies": {
+    "three": "^0.179.1"
+  },
+  "devDependencies": {
+    "vite": "^7.1.3"
+  }
+}
