@@ -1,6 +1,6 @@
-import Canvas from './universe.js';
-import Component from './component.js';
 import APOD from './api/api.js';
+import Component from './component.js';
+import Universe from './universe.js';
 
 export default class App extends Component {
   constructor(target, props) {
@@ -16,7 +16,7 @@ export default class App extends Component {
       // const data = await APOD();
       // console.log('APOD 데이터:', data);
       const container = this.target.querySelector('.container');
-      const universe = new Canvas(container);
+      const universe = new Universe(container);
     } catch (err) {
       console.error(err);
     }
