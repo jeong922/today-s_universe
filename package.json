@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/jeong922/today-s_universe#readme",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "three": "^0.179.1"
   },
   "devDependencies": {

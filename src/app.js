@@ -1,3 +1,5 @@
+import APOD from './api/api.js';
+
 export default class App {
   constructor(target) {
     this.target = target;
@@ -5,10 +7,19 @@ export default class App {
   }
 
   template() {
-    return `<div class="container">test</div>`;
+    return `<div class="container">
+          <canvas class="canvas"></canvas>
+    </div>`;
   }
 
-  mounted() {}
+  async mounted() {
+    try {
+      const data = await APOD();
+      console.log('APOD 데이터:', data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   render() {
     this.target.innerHTML = this.template();
