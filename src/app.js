@@ -1,5 +1,5 @@
 import APOD from './api/api.js';
-import Component from './component.js';
+import Component from './aa.js';
 import Universe from './universe.js';
 
 export default class App extends Component {
