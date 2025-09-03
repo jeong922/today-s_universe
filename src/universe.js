@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Component from './aa.js';
+import Component from './baseComponent.js';
 
 export default class Universe extends Component {
   constructor(target, props) {
