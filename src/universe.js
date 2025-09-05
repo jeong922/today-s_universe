@@ -4,13 +4,13 @@ import Component from './baseComponent.js';
 export default class Universe extends Component {
   static STAR_COUNT = 1000;
   static PALETTE = [
+    [0.7, 0.8, 1.0],
     [1.0, 1.0, 1.0],
-    [1.0, 0.6, 0.2],
-    [1.0, 1.0, 0.4],
-    [0.4, 0.6, 1.0],
-    [0.8, 0.4, 1.0],
-    [1.0, 0.3, 0.3],
-    [0.3, 1.0, 0.8],
+    [1.0, 0.95, 0.7],
+    [1.0, 0.85, 0.5],
+    [1.0, 0.6, 0.3],
+    [1.0, 0.4, 0.4],
+    [0.5, 0.7, 1.0],
   ];
 
   constructor(target, props) {
