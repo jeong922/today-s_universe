@@ -1,5 +1,6 @@
 import APOD from './api/api.js';
 import Component from './baseComponent.js';
+import Galaxy from './galaxy.js';
 import Universe from './universe.js';
 
 export default class App extends Component {
@@ -20,10 +21,5 @@ export default class App extends Component {
     } catch (err) {
       console.error(err);
     }
-  }
-
-  render() {
-    this.target.innerHTML = this.template();
-    this.mounted();
   }
 }
