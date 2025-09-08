@@ -8,16 +8,91 @@
 .app {
   width: 100%;
   height: 100vh;
+  overflow: hidden;
 }
 
 .container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
 }
 
-canvas {
+.title-container {
   position: absolute;
   width: 100%;
   height: 100%;
-  left: 0;
-  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  /* 삭제할지 고민중 */
+  background-color: #ffffff18;
+}
+
+.fade-glow {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 1.5s ease-out forwards;
+
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.8s ease-in;
+  pointer-events: none;
+}
+
+.title {
+  font-size: 5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.start {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  cursor: pointer;
+}
+
+.title {
+  font-size: 5rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
+}
+
+.start {
+  font-size: 1.5rem;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-top: 2rem;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
 }

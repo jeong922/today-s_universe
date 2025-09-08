@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import Stars from './stars.js';
+import Galaxy from './galaxy.js';
 
 export default class Universe {
   constructor(target) {
