@@ -17,6 +17,19 @@ export default class Universe {
     this.initCamera();
 
     this.stars = new Stars(this.scene);
+    this.galaxy = new Galaxy(this.scene, {
+      galaxyParams: {
+        count: 60000,
+        size: 0.03,
+        radius: 380,
+        branches: 5,
+        spin: 5,
+        randomness: 0.11,
+        randomnessPower: 1.8,
+        insideColor: '#d4a15f',
+        outsideColor: '#6644ff',
+      },
+    });
   }
 
   initRenderer() {
@@ -52,6 +65,7 @@ export default class Universe {
     const elapsed = performance.now() * 0.001;
 
     this.stars.update(elapsed);
+    this.galaxy.update(0.01);
 
     const radius = 800;
     this.camera.position.x = Math.cos(elapsed * 0.01) * radius;
