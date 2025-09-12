@@ -1,0 +1,162 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.title-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  /* 삭제할지 고민중 */
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.fade-glow {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 1.5s ease-out forwards;
+
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.8s ease-in;
+  pointer-events: none;
+}
+
+.title {
+  font-size: clamp(2rem, 8vw, 5rem);
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
+}
+
+.start {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-top: 2rem;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(100, 150, 255, 0.6);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 기본 비활성 */
+}
+
+.modal .modal-overlay,
+.modal .modal-content {
+  pointer-events: auto; /* 활성화 */
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 720px;
+  text-align: center;
+  color: rgb(212, 212, 212);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.img {
+  max-width: 400px;
+  margin: 10px 0;
+}
+
+.date {
+  text-align: end;
+}
+
+.explanation {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.explanation::-webkit-scrollbar {
+  width: 8px;
+}
+
+.explanation::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+}
+
+.explanation::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.explanation::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
