@@ -21,6 +21,13 @@ export default class Universe {
     this.initRenderer();
     this.initCamera();
 
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    this.scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(200, 300, 200);
+    this.scene.add(directionalLight);
+
     this.stars = new Stars(this.scene);
     this.galaxy = new Galaxy(this.scene, {
       galaxyParams: {
@@ -70,16 +77,19 @@ export default class Universe {
 
   createPhotoSpheres() {
     const positions = [
-      { x: 400, y: 0, z: 0 },
-      { x: 250, y: 50, z: 200 },
-      { x: -200, y: -30, z: 300 },
-      { x: -350, y: 40, z: 100 },
-      { x: 100, y: -50, z: -350 },
+      { x: 500, y: 100, z: 100 },
+      { x: 350, y: 100, z: 300 },
+      { x: -400, y: -60, z: 600 },
+      { x: -500, y: 300, z: 200 },
+      { x: 200, y: -100, z: -600 },
     ];
+    const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
 
-    for (let i = 0; i < 5; i++) {
-      const sphere = new PhotoSphere(this.scene, positions[i]);
-    }
+    this.props.data.forEach((apod, i) => {
+      const position = positions[i];
+      const color = colors[i];
+      const sphere = new PhotoSphere(this.scene, position, color, apod);
+    });
   }
 
   addEvent() {
