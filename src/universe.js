@@ -5,11 +5,16 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import Stars from './stars.js';
 import Galaxy from './galaxy.js';
 import PhotoSphere from './photoSphere.js';
+import Modal from './modal.js';
 
 export default class Universe {
   constructor(target, props) {
     this.target = target;
     this.props = props;
+
+    const modalTarget = document.querySelector('.modal');
+    this.modal = new Modal(modalTarget);
+
     this.init();
     this.animate();
     this.addEvent();
@@ -43,20 +48,24 @@ export default class Universe {
       },
     });
 
-    this.createPhotoSpheres();
+    this.photoSpheres = this.createPhotoSpheres();
 
     this.setupBloom();
+
+    // Raycaster 준비
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
   }
 
   initRenderer() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(this.target.clientWidth, this.target.clientHeight);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.target.appendChild(this.renderer.domElement);
   }
 
   initCamera() {
-    this.camera = new THREE.PerspectiveCamera(75, this.target.clientWidth / this.target.clientHeight, 0.1, 2000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
     this.camera.position.set(300, 200, 800);
     this.camera.lookAt(0, 0, 0);
   }
@@ -65,12 +74,7 @@ export default class Universe {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
 
-    this.bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(this.target.clientWidth, this.target.clientHeight),
-      0.9,
-      0.8,
-      0.2
-    );
+    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.9, 0.8, 0.2);
 
     this.composer.addPass(this.bloomPass);
   }
@@ -85,29 +89,50 @@ export default class Universe {
     ];
     const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
 
-    this.props.data.forEach((apod, i) => {
+    return this.props.data.map((apod, i) => {
       const position = positions[i];
       const color = colors[i];
       const sphere = new PhotoSphere(this.scene, position, color, apod);
+      return sphere.sphere;
     });
   }
 
   addEvent() {
     this.onResize = this.handleResize.bind(this);
     window.addEventListener('resize', this.onResize);
+
+    // 클릭 이벤트
+    this.onClick = this.handleClick.bind(this);
+    this.renderer.domElement.addEventListener('click', this.onClick);
+  }
+
+  handleClick(event) {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const intersects = this.raycaster.intersectObjects(this.photoSpheres);
+
+    if (intersects.length > 0) {
+      const clickedSphere = intersects[0].object;
+      console.log('클릭한 구 데이터:', clickedSphere.userData);
+
+      this.modal.open(clickedSphere.userData);
+    }
   }
 
   handleResize() {
-    if (!this.camera || !this.renderer) {
-      return;
-    }
+    if (!this.camera || !this.renderer) return;
 
-    this.camera.aspect = this.target.clientWidth / this.target.clientHeight;
+    this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.target.clientWidth, this.target.clientHeight);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     if (this.composer) {
-      this.composer.setSize(this.target.clientWidth, this.target.clientHeight);
+      this.composer.setSize(window.innerWidth, window.innerHeight);
     }
   }
 
@@ -118,7 +143,7 @@ export default class Universe {
     this.stars.update(elapsed);
     this.galaxy.update(0.01);
 
-    const radius = 800;
+    const radius = 900;
     this.camera.position.x = Math.cos(elapsed * 0.01) * radius;
     this.camera.position.z = Math.sin(elapsed * 0.01) * radius;
     this.camera.lookAt(0, 0, 0);
