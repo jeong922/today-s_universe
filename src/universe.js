@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import Stars from './stars.js';
 import Galaxy from './galaxy.js';
 
@@ -19,17 +22,19 @@ export default class Universe {
     this.stars = new Stars(this.scene);
     this.galaxy = new Galaxy(this.scene, {
       galaxyParams: {
-        count: 60000,
-        size: 0.03,
-        radius: 380,
+        count: 50000,
+        size: 0.01,
+        radius: 350,
         branches: 5,
         spin: 5,
-        randomness: 0.11,
+        randomness: 0.15,
         randomnessPower: 1.8,
         insideColor: '#d4a15f',
-        outsideColor: '#6644ff',
+        outsideColor: '#5744ff',
       },
     });
+
+    this.setupBloom();
   }
 
   initRenderer() {
@@ -45,6 +50,20 @@ export default class Universe {
     this.camera.lookAt(0, 0, 0);
   }
 
+  setupBloom() {
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+    this.bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(this.target.clientWidth, this.target.clientHeight),
+      1.2,
+      0.8,
+      0.2
+    );
+
+    this.composer.addPass(this.bloomPass);
+  }
+
   addEvent() {
     this.onResize = this.handleResize.bind(this);
     window.addEventListener('resize', this.onResize);
@@ -58,6 +77,10 @@ export default class Universe {
     this.camera.aspect = this.target.clientWidth / this.target.clientHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.target.clientWidth, this.target.clientHeight);
+
+    if (this.composer) {
+      this.composer.setSize(this.target.clientWidth, this.target.clientHeight);
+    }
   }
 
   animate() {
@@ -72,6 +95,6 @@ export default class Universe {
     this.camera.position.z = Math.sin(elapsed * 0.01) * radius;
     this.camera.lookAt(0, 0, 0);
 
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
   }
 }

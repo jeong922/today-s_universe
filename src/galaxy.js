@@ -5,7 +5,7 @@ export default class Galaxy {
     this.scene = scene;
     this.props = props;
     this.group = new THREE.Group();
-    this.group.rotation.x = THREE.MathUtils.degToRad(10);
+    this.group.rotation.x = THREE.MathUtils.degToRad(5);
     this.group.rotation.z = THREE.MathUtils.degToRad(5);
     this.scene.add(this.group);
 
