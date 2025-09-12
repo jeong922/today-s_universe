@@ -36,7 +36,7 @@
   z-index: 10;
 
   /* 삭제할지 고민중 */
-  background-color: #ffffff18;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .fade-glow {
@@ -62,24 +62,7 @@
 }
 
 .title {
-  font-size: 5rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 1px;
-  text-align: center;
-}
-
-.start {
-  background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  margin-top: 2rem;
-  cursor: pointer;
-}
-
-.title {
-  font-size: 5rem;
+  font-size: clamp(2rem, 8vw, 5rem);
   font-weight: 700;
   color: white;
   text-align: center;
@@ -88,7 +71,7 @@
 }
 
 .start {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
   color: white;
   background: transparent;
   border: none;
