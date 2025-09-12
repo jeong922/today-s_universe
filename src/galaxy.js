@@ -9,14 +9,21 @@ export default class Galaxy {
     this.group.rotation.z = THREE.MathUtils.degToRad(5);
     this.scene.add(this.group);
 
-    this.createGalaxy();
+    this.init();
 
     const axesHelper = new THREE.AxesHelper(400);
     this.group.add(axesHelper);
   }
 
-  createGalaxy() {
-    const { count, size, radius, branches, spin, randomness, randomnessPower, insideColor, outsideColor } =
+  init() {
+    const geometry = this.createGeometry();
+    const material = this.createMaterial();
+    this.points = new THREE.Points(geometry, material);
+    this.group.add(this.points);
+  }
+
+  createGeometry() {
+    const { count, radius, branches, spin, randomness, randomnessPower, insideColor, outsideColor } =
       this.props.galaxyParams;
 
     const geometry = new THREE.BufferGeometry();
@@ -59,7 +66,12 @@ export default class Galaxy {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
 
-    const material = new THREE.ShaderMaterial({
+    return geometry;
+  }
+
+  createMaterial() {
+    const { size } = this.props.galaxyParams;
+    return new THREE.ShaderMaterial({
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
@@ -87,9 +99,6 @@ export default class Galaxy {
         }
       `,
     });
-
-    this.points = new THREE.Points(geometry, material);
-    this.group.add(this.points);
   }
 
   update(delta) {
