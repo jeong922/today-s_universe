@@ -11,8 +11,8 @@ export default class Galaxy {
 
     this.init();
 
-    const axesHelper = new THREE.AxesHelper(400);
-    this.group.add(axesHelper);
+    // const axesHelper = new THREE.AxesHelper(400);
+    // this.group.add(axesHelper);
   }
 
   init() {

@@ -56,7 +56,7 @@ export default class Universe {
 
     this.bloomPass = new UnrealBloomPass(
       new THREE.Vector2(this.target.clientWidth, this.target.clientHeight),
-      1.2,
+      0.9,
       0.8,
       0.2
     );
