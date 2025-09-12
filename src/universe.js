@@ -4,10 +4,12 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import Stars from './stars.js';
 import Galaxy from './galaxy.js';
+import PhotoSphere from './photoSphere.js';
 
 export default class Universe {
-  constructor(target) {
+  constructor(target, props) {
     this.target = target;
+    this.props = props;
     this.init();
     this.animate();
     this.addEvent();
@@ -33,6 +35,8 @@ export default class Universe {
         outsideColor: '#5744ff',
       },
     });
+
+    this.createPhotoSpheres();
 
     this.setupBloom();
   }
@@ -62,6 +66,20 @@ export default class Universe {
     );
 
     this.composer.addPass(this.bloomPass);
+  }
+
+  createPhotoSpheres() {
+    const positions = [
+      { x: 400, y: 0, z: 0 },
+      { x: 250, y: 50, z: 200 },
+      { x: -200, y: -30, z: 300 },
+      { x: -350, y: 40, z: 100 },
+      { x: 100, y: -50, z: -350 },
+    ];
+
+    for (let i = 0; i < 5; i++) {
+      const sphere = new PhotoSphere(this.scene, positions[i]);
+    }
   }
 
   addEvent() {
