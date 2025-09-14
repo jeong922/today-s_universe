@@ -19,11 +19,10 @@ export default class App extends Component {
 
   async mounted() {
     try {
-      const data = await APOD();
-      console.log('APOD 데이터:', data);
       const titleContainer = this.target.querySelector('.title-container');
       const canvasContainer = this.target.querySelector('.canvas-container');
       const title = new Title(titleContainer);
+      const data = await APOD();
       const universe = new Universe(canvasContainer, { data });
     } catch (err) {
       console.error(err);
