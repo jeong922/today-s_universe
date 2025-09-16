@@ -18,13 +18,14 @@ export default class Modal extends Component {
     const { title, url, explanation, date } = this.state.apodData;
 
     return `
-      <div class="modal-overlay"></div>
-      <div class="modal-content">
-      <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
-        <h2>${title}</h2>
-        <p class="date">${date}</p>
-        <img class="img" src="${url}">
-        <p class="explanation">${explanation}</p>
+      <div class="modal-overlay">
+        <div class="modal-content">
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+          <h2>${title}</h2>
+          <p class="date">${date}</p>
+          <img class="img" src="${url}">
+          <p class="explanation">${explanation}</p>
+        </div>
       </div>
     `;
   }
