@@ -35,7 +35,7 @@ export default class Modal extends Component {
     }
 
     return `
-      <div class="modal-overlay">
+      <div class="modal-overlay"></div>
         <div class="modal-content">
           <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
           <h2>${title}</h2>
@@ -43,7 +43,7 @@ export default class Modal extends Component {
           ${media}
           <p class="explanation">${explanation}</p>
         </div>
-      </div>
+
     `;
   }
 
