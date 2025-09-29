@@ -1,73 +1,103 @@
-# React + TypeScript + Vite
+# 오늘의 우주는?
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 배포
 
-Currently, two official plugins are available:
+### [오늘의 우주는?](https://today-s-universe.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 설명
 
-## React Compiler
+> Three.js를 이용해 3D 우주 공간을 구현하고, 오늘의 NASA 우주 사진 정보를 알려주는 사이트
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+프로젝트 주제를 고민하던 중 NASA Open APIs를 알게 되었다. 단순히 API 데이터를 받아와 화면에 보여주는 방식은 이미 여러 번 해왔던 방식이라 새로운 접근이 필요하다고 생각했다. 그래서 이전부터 사용해 보고 싶었던 Three.js를 활용해 우주 배경을 구현하고, 그 위에 API로 받아온 데이터를 시각화하는 방법을 떠올렸다. 이는 직접 개발하는 나에게도 새로운 경험이 될 뿐만 아니라, 사용자에게도 색다른 경험을 줄 수 있는 방식이라고 생각했다.
 
-## Expanding the ESLint configuration
+## 기술
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- HTML, CSS, JavaScript, Three.js, NASA Open APIs APOD, Vite
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 왜 Three.js인가?
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Three.js는 GPU 기반 게임 및 기타 그래픽 앱을 브라우저에서 바로 실행할 수 있는 JavaScript 기반의 WebGL 엔진으로, 브라우저에서 3D 장면을 그리기 위한 다양한 기능과 API를 제공한다.
+- WebGL은 강력하지만 너무 로우레벨이라 개발에 시간이 오래걸리지만, Three.js는 이를 보완해 더 빠르고 직관적인 3D 웹 개발을 가능하게 하기 때문에 선택하게 되었다.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 설계
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 타이틀
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Three.js를 이용해 오늘의 우주는? 이라는 타이틀을 보여주고 시작 버튼을 누르면 타이틀 사라진다.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 3D 우주 배경
+
+- 배경 별
+  - Three.js를 이용해 별 랜덤 배치한다.
+    - 특정 수만큼 별의 위치와 색상을 랜덤으로 설정한다.
+    - 각 별마다 다른 위상으로 깜빡이도록 구현한다.
+  - 카메라 기준으로 가까운 별은 크게, 작은 별은 작게 표현한다.
+- 나선 은하
+
+  - Three.js를 이용해 구현한다.
+  - 팽대부
+    - 은하 중심으로 별이 가장 밀집되어 있는 영역이다.
+    - 늙은 별로 구성되어 있다고 가정하고, 노란빛이나 붉은빛 계열로 표현한다.
+    - 중심기준으로 빛나도록 구현한다.
+  - 나선팔
+    - 은하의 시각적 특징을 결정하는 중요한 구조이다.
+    - 중심에서 멀어질수록 어린 별이 많아 파린빛 계열로 구현한다.
+    - 팔의 형태는 나선곡선 형태로 구현한다.
+  - 별 분포
+    - 팽대부와 나선팔을 중심으로 별이 자연스럽게 분포하도록 배치한다.
+
+- 헹성(일단 예정)
+  - Three.js를 이용해 달, 지구 또는 그냥 행성을 구현하여 궤도 표현한다.
+
+### NASA API 호출
+
+- NASA Open APIs APOD를 이용해 5일치 데이터를 가져온다.
+- 화면에 구형태를 만들어 각 구마다 데이터를 매칭시켜 클릭시 상세 정보를 확인할 수 있도록 구현한다.
+
+### 성능 고려
+
+- 별 수
+  - 배경 별: 1000 ~ 2000개 사이로 설정한다.
+  - 은하 입자: 50000개 이하로 설정한다.
+
+## 구현 (수정 필요)
+
+### 타이틀 구현
+
+처음에는 이부분도 Three.js를 이용해 구현하려고 했다. 처음 계획은 오늘의 우주는? 이라는 타이틀이 뜨고 시작 버튼을 누르면 글자의 점들이 흩어져서 배경 별이 되는걸 생각했는데 생각보다 복잡하여 간단하게 일반적인 HTML 태그를 이용해 구현하고 DOM을 조작하는 형태로 변경하였다.
+
+### Three.js 설정
+
+Universe라는 클래스를 Three.js 관련 최상위 클래스로 잡고 구현했다.
+
+### 배경 별 뿌리기
+
+Stars 클래스에서 이부분을 처리한다.
+
+### 나선 은하 구현
+
+Galaxy 클래스에서 이부분을 처리한다.
+
+### APOD API
+
+간단하게 try...catch와 async...await, 그리고 fetch를 이용해 데이터를 받아오도록 구현했다.
+
+---
+
+## React로 전환
+
+### 전환 이유는?
+
+개선이나 추가 기능 구현 이전에 React로 전환하기로 결정했다. 그 이유는 React가 상태 관리와 DOM 조작을 더 간편하게 해주기 때문이며, Three.js를 사용할 때 React 환경에서는 어떻게 활용할 수 있는지도 학습하고 싶었기 때문이다.
+
+### 전환 과정
+
+- 여기 작성하기~
+
+## 개선할 점
+
+- 나선 은하 수정
+- 모바일 반응형
+- API 데이터 표현 방법 변경
+- 테스트 코드 작성
+- 이미지 처리 수정
