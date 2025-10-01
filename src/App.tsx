@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Title } from './components/Title';
+import { Universe } from './components/Universe';
 
 function App() {
   const [visible, setVisible] = useState(true);
+  const [apodData, setApodData] = useState([]);
 
   const handleStart = () => {
     setVisible(false);
@@ -10,8 +12,12 @@ function App() {
 
   return (
     <div className='bg-black w-full min-h-screen'>
-      {visible && <Title onStart={handleStart} />}
-      {!visible && <div className='text-white'>여기 우주 들어감</div>}
+      {/* {visible && <Title onStart={handleStart} />} */}
+      {visible && (
+        <div className='w-full h-screen'>
+          <Universe data={apodData} />
+        </div>
+      )}
     </div>
   );
 }
