@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { Starfield } from './Starfield';
 
 // 타입 수정하기
 interface Props {
@@ -24,6 +25,8 @@ export const Universe = ({ data }: Props) => {
       {/* Ambient + Directional Light */}
       <ambientLight intensity={0.6} />
       <directionalLight intensity={1} position={[200, 300, 200]} />
+
+      <Starfield />
 
       {/* PhotoSpheres 구현 및 이름 바꾸기*/}
 
