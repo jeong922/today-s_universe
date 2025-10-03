@@ -17,7 +17,6 @@ const PALETTE: [number, number, number][] = [
 export const Starfield = () => {
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
-  // Geometry 데이터 생성 (useMemo로 한 번만 생성)
   const geometry = useMemo(() => {
     const positions = new Float32Array(STAR_COUNT * 3);
     const colors = new Float32Array(STAR_COUNT * 3);
@@ -44,7 +43,6 @@ export const Starfield = () => {
     return geometry;
   }, []);
 
-  // 애니메이션 루프 (uTime 업데이트)
   useFrame(({ clock }) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = clock.getElapsedTime();
