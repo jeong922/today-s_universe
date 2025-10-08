@@ -22,6 +22,7 @@ const CameraController = () => {
 };
 
 export const Universe = ({ data }: Props) => {
+  console.log(data);
   return (
     <Canvas
       camera={{
