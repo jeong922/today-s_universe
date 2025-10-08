@@ -11,9 +11,10 @@ interface Props {
   };
   color?: string;
   apodData: ApodResponse;
+  onClick: () => void;
 }
 
-export const ApodSphere = ({ position, color = '#fdfb74', apodData }: Props) => {
+export const ApodSphere = ({ position, color = '#fdfb74', apodData, onClick }: Props) => {
   const meshRef = useRef<THREE.Mesh>(null!);
   const material = new THREE.MeshStandardMaterial({
     color,
@@ -36,7 +37,18 @@ export const ApodSphere = ({ position, color = '#fdfb74', apodData }: Props) => 
   });
 
   return (
-    <mesh ref={meshRef} position={[position.x, position.y, position.z]} material={material}>
+    <mesh
+      onClick={onClick}
+      onPointerOver={() => {
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = 'default';
+      }}
+      ref={meshRef}
+      position={[position.x, position.y, position.z]}
+      material={material}
+    >
       <sphereGeometry args={[20, 64, 32]} />
     </mesh>
   );
