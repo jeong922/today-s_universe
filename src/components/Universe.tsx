@@ -4,6 +4,17 @@ import { Starfield } from './Starfield';
 import { Galaxy } from './Galaxy';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import type { ApodResponse } from '../api/api';
+import { ApodSphere } from './ApodSphere';
+
+const positions = [
+  { x: 500, y: 100, z: 100 },
+  { x: 350, y: 100, z: 300 },
+  { x: -400, y: -60, z: 600 },
+  { x: -500, y: 300, z: 200 },
+  { x: 200, y: -100, z: -600 },
+];
+
+const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
 
 interface Props {
   data: ApodResponse[];
@@ -49,7 +60,9 @@ export const Universe = ({ data }: Props) => {
         }}
       />
 
-      {/* PhotoSpheres 구현 및 이름 바꾸기*/}
+      {data.slice(0, positions.length).map((item, index) => (
+        <ApodSphere key={item.date} position={positions[index]} color={colors[index]} apodData={item} />
+      ))}
 
       <EffectComposer>
         <Bloom intensity={1.2} luminanceThreshold={0.2} luminanceSmoothing={0.9} />
