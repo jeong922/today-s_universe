@@ -3,10 +3,10 @@ import { OrbitControls } from '@react-three/drei';
 import { Starfield } from './Starfield';
 import { Galaxy } from './Galaxy';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import type { ApodResponse } from '../api/api';
 
-// 타입 수정하기
 interface Props {
-  data: any[];
+  data: ApodResponse[];
 }
 
 const CameraController = () => {
@@ -22,7 +22,6 @@ const CameraController = () => {
 };
 
 export const Universe = ({ data }: Props) => {
-  console.log(data);
   return (
     <Canvas
       camera={{

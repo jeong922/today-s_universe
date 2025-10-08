@@ -1,6 +1,5 @@
-// Stars.tsx
 import * as THREE from 'three';
-import React, { useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 const STAR_COUNT = 1000;
