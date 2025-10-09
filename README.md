@@ -1,8 +1,8 @@
-# 오늘의 우주는?
+# 🌌 오늘의 우주는?
 
 ## 배포
 
-### [오늘의 우주는?](https://today-s-universe.vercel.app/)
+### [🌌 오늘의 우주는?](https://today-s-universe.vercel.app/)
 
 ## 설명
 
@@ -12,7 +12,7 @@
 
 ## 기술
 
-- HTML, CSS, JavaScript, Three.js, NASA Open APIs APOD, Vite
+- HTML, CSS, JavaScript, Three.js, NASA Open APIs APOD, Vite, Git, GitHub
 
 ### 왜 Three.js인가?
 
@@ -68,7 +68,7 @@
 
 ### Three.js 설정
 
-Universe라는 클래스를 Three.js 관련 최상위 클래스로 잡고 구현했다.
+Universe 클래스는 Three.js를 기반으로 한 3D 우주 시뮬레이션의 최상위 클래스이다. 씬(Scene), 카메라(Camera), 조명(Light), 렌더러(Renderer), 포스트 프로세싱(Post-Processing)과 우주 구성 요소(별, 은하, 사진 구)를 모두 관리하고 있다.
 
 ### 배경 별 뿌리기
 
@@ -88,11 +88,49 @@ Galaxy 클래스에서 이부분을 처리한다.
 
 ### 전환 이유는?
 
-개선이나 추가 기능 구현 이전에 React로 전환하기로 결정했다. 그 이유는 React가 상태 관리와 DOM 조작을 더 간편하게 해주기 때문이며, Three.js를 사용할 때 React 환경에서는 어떻게 활용할 수 있는지도 학습하고 싶었기 때문이다.
+개선이나 추가 기능 구현 이전에 React로 전환하기로 결정했다. 그 이유는 React 사용을 목표로 하고 있는데 더 많은 기능을 구현하고 전환하려면 복잡할 것이라고 생각했고, React가 상태 관리와 DOM 조작을 더 간편하게 해주기 때문이다. 그리고 Three.js를 사용할 때 React 환경에서는 어떻게 활용할 수 있는지도 학습하고 싶었기 때문이다.
 
 ### 전환 과정
 
-- 여기 작성하기~
+- React 설정
+
+  - ⚠️ 처음해보는 작업이라 이런 방식으로 전환하는게 아닐 수 있다.
+  - 버전 관리를 위해 Git 브랜치를 새로 만들어 (dev-react) 작업했다.
+  - Vite를 이용해 React를 셋팅했고 순차적으로 전환하기 위해 기존 코드는 legacy 폴더 안으로 옮겨줬다.
+  - React에서 Three.js를 사용하기 위해 fiber(R3F)와 drei를 설치해줬다.
+    | 라이브러리 | 역할 | 필요성 |
+    | ------------------ | ------------------- | ------------------------------------- |
+    | @react-three/fiber | React용 Three.js 렌더러 | JSX + Hooks로 Three.js 제어 가능 |
+    | @react-three/drei | R3F용 컴포넌트/유틸 | 반복 구현 없이 OrbitControls, Stars 등 바로 사용 |
+
+- useFrame
+  - React Three Fiber(R3F)에서 매 프레임마다 호출되는 훅으로, Three.js의 requestAnimationFrame과 유사하게 동작하며, 렌더 루프에 로직을 등록할 수 있다.
+  - 반드시 `<Canvas>` 내부 컴포넌트에서만 사용 가능하다. 이걸 모르고 외부에서 호출했다가 아래와 같은 오류가 발생했었다.
+    `R3F: Hooks can only be used within the Canvas component!`
+- Bloom 효과
+
+  - 기존에 나선 은하가 너무 심심해보여서 Bloom 효과를 줬었다. 이 효과 사용 방법이 React에서는 설정 방법이 조금 달랐다
+  - 기존 Three.js 코드는 아래와 같다. 기존 구현에서는 EffectComposer와 UnrealBloomPass를 직접 사용하여 Bloom 효과를 추가했다.
+
+  ```js
+      setupBloom() {
+      this.composer = new EffectComposer(this.renderer);
+      this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+      this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.9, 0.8, 0.2);
+
+      this.composer.addPass(this.bloomPass);
+    }
+
+  ```
+
+  - React 환경(`@react-three/fiber`)에서는 `EffectComposer`를 직접 다루지 않고, `@react-three/postprocessing` 패키지를 활용하는 것이 일반적인 방법이라고 한다.
+
+  ```tsx
+  <EffectComposer>
+    <Bloom intensity={1.2} luminanceThreshold={0.2} luminanceSmoothing={0.9} />
+  </EffectComposer>
+  ```
 
 ## 개선할 점
 
