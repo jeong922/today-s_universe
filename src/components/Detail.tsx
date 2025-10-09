@@ -29,7 +29,7 @@ export const Detail = ({ apodData, onClose }: Props) => {
         <p className='text-right text-sm md:text-base mb-4'>{date}</p>
 
         {media_type === 'image' ? (
-          <img className='w-full max-h-96 object-contain mb-4' src={url} alt={title} />
+          <img className='w-full h-96 max-h-96 object-contain mb-4' loading='lazy' src={url} alt={title} />
         ) : media_type === 'video' ? (
           <div className='w-full aspect-video mb-4'>
             <iframe
