@@ -112,25 +112,38 @@ Galaxy 클래스에서 이부분을 처리한다.
   - 기존에 나선 은하가 너무 심심해보여서 Bloom 효과를 줬었다. 이 효과 사용 방법이 React에서는 설정 방법이 조금 달랐다
   - 기존 Three.js 코드는 아래와 같다. 기존 구현에서는 EffectComposer와 UnrealBloomPass를 직접 사용하여 Bloom 효과를 추가했다.
 
-  ```js
-      setupBloom() {
-      this.composer = new EffectComposer(this.renderer);
-      this.composer.addPass(new RenderPass(this.scene, this.camera));
+    ```js
+        setupBloom() {
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.addPass(new RenderPass(this.scene, this.camera));
 
-      this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.9, 0.8, 0.2);
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.9, 0.8, 0.2);
 
-      this.composer.addPass(this.bloomPass);
-    }
+        this.composer.addPass(this.bloomPass);
+      }
 
-  ```
+    ```
 
   - React 환경(`@react-three/fiber`)에서는 `EffectComposer`를 직접 다루지 않고, `@react-three/postprocessing` 패키지를 활용하는 것이 일반적인 방법이라고 한다.
 
-  ```tsx
-  <EffectComposer>
-    <Bloom intensity={1.2} luminanceThreshold={0.2} luminanceSmoothing={0.9} />
-  </EffectComposer>
-  ```
+    ```tsx
+    <EffectComposer>
+      <Bloom intensity={1.2} luminanceThreshold={0.2} luminanceSmoothing={0.9} />
+    </EffectComposer>
+    ```
+
+  ### React 전환 후 Vercel 배포 오류 해결
+
+  - Rollup Linux 바이너리 누락 문제
+    - Vercel로 배포 시도 중 아래와 같은 에러가 발생했다.
+      > Error: Cannot find module '@rollup/rollup-linux-x64-gnu'Require stack: /vercel/path0/node_modules/rollup/dist/native.js
+    - Rollup이 일부 네이티브 바이너리를 optional dependency로 설치하는데, Vercel Linux 환경에서는 해당 모듈을 찾지 못한 경우와 Node 환경과 로컬 환경에서 설치된 바이너리가 불일치 되서 생기는 문제라고 한다.
+    - `npm install rollup@4.18.0 --save-dev`를 이용해 설치한 뒤, 다시 배포를 시도 했더니 해결 되었다.
+  - SWC 네이티브 바인딩 로드 실패
+    - 배포 시도 중 아래와 같은 에러가 발생했다.
+      > Error: Failed to load native binding at Object.<anonymous> (/vercel/path0/node_modules/@swc/core/binding.js:333:11)
+    - @swc/core 모듈의 네이티브 바이너리가 Vercel Linux 환경과 호환되지 않아서 생기는 문제라고 한다.
+    - `npm install @swc/core --save-dev`를 이용해 설치한 뒤, 다시 배포를 시도 했더니 해결 되었다.
 
 ## 개선할 점
 
