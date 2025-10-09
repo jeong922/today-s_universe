@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@swc/core": "^1.13.5",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react-swc": "^4.1.0",
