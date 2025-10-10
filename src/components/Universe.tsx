@@ -8,6 +8,7 @@ import { ApodSphere } from './ApodSphere';
 import { useState } from 'react';
 import { Detail } from './Detail';
 import { ModalPortal } from './ModalPortal';
+import { useApodData } from '../hooks/useApodData';
 
 const positions = [
   { x: 500, y: 100, z: 100 },
@@ -18,10 +19,6 @@ const positions = [
 ];
 
 const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
-
-interface Props {
-  data: ApodResponse[];
-}
 
 const CameraController = () => {
   useFrame(({ clock, camera }) => {
@@ -35,7 +32,9 @@ const CameraController = () => {
   return null;
 };
 
-export const Universe = ({ data }: Props) => {
+export const Universe = () => {
+  const { data } = useApodData(5);
+
   const [selectedData, setSelectedData] = useState<ApodResponse | null>(null);
 
   const onClick = (data: ApodResponse) => {
