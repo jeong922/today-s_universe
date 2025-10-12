@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Starfield } from './Starfield';
 import { Galaxy } from './Galaxy';
@@ -20,17 +20,17 @@ const positions = [
 
 const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
 
-const CameraController = () => {
-  useFrame(({ clock, camera }) => {
-    const elapsed = clock.getElapsedTime();
-    const radius = 900;
-    camera.position.x = Math.cos(elapsed * 0.01) * radius;
-    camera.position.z = Math.sin(elapsed * 0.01) * radius;
-    camera.lookAt(0, 0, 0);
-  });
+// const CameraController = () => {
+//   useFrame(({ clock, camera }) => {
+//     const elapsed = clock.getElapsedTime();
+//     const radius = 900;
+//     camera.position.x = Math.cos(elapsed * 0.01) * radius;
+//     camera.position.z = Math.sin(elapsed * 0.01) * radius;
+//     camera.lookAt(0, 0, 0);
+//   });
 
-  return null;
-};
+//   return null;
+// };
 
 export const Universe = () => {
   const { data } = useApodData(5);
@@ -49,7 +49,7 @@ export const Universe = () => {
     <>
       <Canvas
         camera={{
-          position: [300, 200, 800],
+          position: [300, 200, 1000],
           fov: 75,
           near: 0.1,
           far: 4000,
@@ -84,11 +84,20 @@ export const Universe = () => {
         ))}
 
         <EffectComposer>
-          <Bloom intensity={1.2} luminanceThreshold={0.2} luminanceSmoothing={0.9} />
+          <Bloom intensity={1.2} luminanceThreshold={0.4} luminanceSmoothing={0.9} />
         </EffectComposer>
 
-        <OrbitControls enableZoom={false} enableRotate={false} />
-        <CameraController />
+        <OrbitControls
+          enableZoom={true}
+          minDistance={400}
+          maxDistance={1500}
+          zoomSpeed={1.1}
+          enableRotate={true}
+          autoRotate={true}
+          autoRotateSpeed={0.05}
+        />
+
+        {/* <CameraController /> */}
       </Canvas>
 
       {selectedData && (
