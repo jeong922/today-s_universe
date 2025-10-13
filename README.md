@@ -1,8 +1,8 @@
-# 🌌 오늘의 우주는?
+# 🌌 Explore Universe
 
 ## 배포
 
-### [🌌 오늘의 우주는?](https://today-s-universe.vercel.app/)
+### [🌌 Explore Universe](https://today-s-universe.vercel.app/)
 
 ## 설명
 
