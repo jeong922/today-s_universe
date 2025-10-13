@@ -43,6 +43,6 @@ export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
     return results.sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, count);
   } catch (error) {
     console.error(error);
-    return [];
+    throw error;
   }
 }

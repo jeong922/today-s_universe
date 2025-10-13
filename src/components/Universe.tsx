@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { Detail } from './Detail';
 import { ModalPortal } from './ModalPortal';
 import { useApodData } from '../hooks/useApodData';
+import { Loading } from './Loading';
+import { Error } from './Error';
 
 const positions = [
   { x: 500, y: 100, z: 100 },
@@ -20,20 +22,8 @@ const positions = [
 
 const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
 
-// const CameraController = () => {
-//   useFrame(({ clock, camera }) => {
-//     const elapsed = clock.getElapsedTime();
-//     const radius = 900;
-//     camera.position.x = Math.cos(elapsed * 0.01) * radius;
-//     camera.position.z = Math.sin(elapsed * 0.01) * radius;
-//     camera.lookAt(0, 0, 0);
-//   });
-
-//   return null;
-// };
-
 export const Universe = () => {
-  const { data } = useApodData(5);
+  const { data, isLoading, error, refetch } = useApodData(5);
 
   const [selectedData, setSelectedData] = useState<ApodResponse | null>(null);
 
@@ -73,15 +63,18 @@ export const Universe = () => {
           }}
         />
 
-        {data.slice(0, positions.length).map((item, index) => (
-          <ApodSphere
-            key={item.date}
-            position={positions[index]}
-            color={colors[index]}
-            apodData={item}
-            onClick={() => onClick(item)}
-          />
-        ))}
+        {!isLoading &&
+          data
+            .slice(0, positions.length)
+            .map((item, index) => (
+              <ApodSphere
+                key={item.date}
+                position={positions[index]}
+                color={colors[index]}
+                apodData={item}
+                onClick={() => onClick(item)}
+              />
+            ))}
 
         <EffectComposer>
           <Bloom intensity={1.2} luminanceThreshold={0.4} luminanceSmoothing={0.9} />
@@ -96,9 +89,10 @@ export const Universe = () => {
           autoRotate={true}
           autoRotateSpeed={0.05}
         />
-
-        {/* <CameraController /> */}
       </Canvas>
+
+      {isLoading && <Loading />}
+      {error && <Error onRetry={refetch} />}
 
       {selectedData && (
         <ModalPortal>

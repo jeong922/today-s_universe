@@ -12,9 +12,11 @@ function App() {
   return (
     <div className='bg-black w-full min-h-screen'>
       {visible && <Title onStart={handleStart} />}
-      <div className='w-full h-screen'>
-        <Universe />
-      </div>
+      {!visible && (
+        <div className='w-full h-screen'>
+          <Universe />
+        </div>
+      )}
     </div>
   );
 }
