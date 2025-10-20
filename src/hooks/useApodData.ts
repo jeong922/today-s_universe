@@ -9,6 +9,8 @@ export const useApodData = (count: number = 5) => {
       const [, count] = queryKey;
       return await APOD(count as number);
     },
+    retry: false,
+    staleTime: 0,
   });
 
   return { data: data || [], error, isLoading, isError, refetch };
