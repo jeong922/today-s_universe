@@ -1,5 +1,7 @@
 # 🌌 Explore Universe
 
+~~원래 프로젝트 제목은 오늘의 우주는?이지만 보여주는 데이터 때문에 우주 탐험으로 바뀌었다.~~
+
 ## 배포
 
 ### [🌌 Explore Universe](https://today-s-universe.vercel.app/)
@@ -12,12 +14,20 @@
 
 ## 기술
 
-- HTML, CSS, JavaScript, Three.js, NASA Open APIs APOD, Vite, Git, GitHub
+- HTML, CSS, JavaScript, Three.js, NASA Open APIs APOD, Vite, Git, GitHub, TypeScript, React, Framer Motion, Tailwind CSS
 
 ### 왜 Three.js인가?
 
 - Three.js는 GPU 기반 게임 및 기타 그래픽 앱을 브라우저에서 바로 실행할 수 있는 JavaScript 기반의 WebGL 엔진으로, 브라우저에서 3D 장면을 그리기 위한 다양한 기능과 API를 제공한다.
 - WebGL은 강력하지만 너무 로우레벨이라 개발에 시간이 오래걸리지만, Three.js는 이를 보완해 더 빠르고 직관적인 3D 웹 개발을 가능하게 하기 때문에 선택하게 되었다.
+
+## 화면
+
+### 시작 화면
+
+### 우주 배경
+
+### 데이터 상세 모달
 
 ## 설계
 
@@ -60,19 +70,24 @@
   - 배경 별: 1000 ~ 2000개 사이로 설정한다.
   - 은하 입자: 50000개 이하로 설정한다.
 
-## 구현 (수정 필요)
+## 구현
 
 ### 타이틀 구현
 
-처음에는 이부분도 Three.js를 이용해 구현하려고 했다. 처음 계획은 오늘의 우주는? 이라는 타이틀이 뜨고 시작 버튼을 누르면 글자의 점들이 흩어져서 배경 별이 되는걸 생각했는데 생각보다 복잡하여 간단하게 일반적인 HTML 태그를 이용해 구현하고 DOM을 조작하는 형태로 변경하였다.
+- 처음에는 이부분도 Three.js를 이용해 구현하려고 했다. 처음 계획은 오늘의 우주는? 이라는 타이틀이 뜨고 시작 버튼을 누르면 글자의 점들이 흩어져서 배경 별이 되는걸 생각했는데 생각보다 복잡하여 간단하게 일반적인 HTML 태그를 이용해 구현하고 DOM을 조작하는 형태로 변경하였다.
+- 이후 API 데이터가 영어로 되어 있어 번역기를 붙일까 했지만 일단은 일관성을 이유로 Explore Universe로 프로젝트 타이틀을 변경했다.
+- 개인적 미적인 감각이 부족하다고 느껴, AI의 도움을 받아 Framer Motion을 이용해 시각적인 효과를 더했다.
 
 ### Three.js 설정
 
-Universe 클래스는 Three.js를 기반으로 한 3D 우주 시뮬레이션의 최상위 클래스이다. 씬(Scene), 카메라(Camera), 조명(Light), 렌더러(Renderer), 포스트 프로세싱(Post-Processing)과 우주 구성 요소(별, 은하, 사진 구)를 모두 관리하고 있다.
+- Universe 클래스는 Three.js를 기반으로 한 3D 우주 시뮬레이션의 최상위 클래스이다. 씬(Scene), 카메라(Camera), 조명(Light), 렌더러(Renderer), 포스트 프로세싱(Post-Processing)과 우주 구성 요소(별, 은하, 사진 구)를 모두 관리하고 있다.
+- 초기에는 JavaScript를 이용해 기본 사용법을 확인했고 이후에 React로 전환하면서 Universe 컴포넌트를와 R3F(React Three Fiber)를 이용해 구현했다.
 
 ### 배경 별 뿌리기
 
-Stars 클래스에서 이부분을 처리한다.
+- 순수한 JavaScript와 Three.js로 구현한 코드를 React에서 R3F를 이용해 Starfield 컴포넌트를 구현해 별 배경을 표현했다.
+- 별의 위치와 색상을 랜덤으로 배치하고, ShaderMaterial을 활용해 반짝임 효과를 적용했다.
+- `@react-three/drei`가 Stars라는 미리 만들어진 3D 별 배경 컴포넌트가 포함되어 있어 그것을 사용하는 것도 하나의 방법이지만 확인해보니 원하는 형태가 아니라서 그냥 만든 것을 사용했다.
 
 ### 나선 은하 구현
 
@@ -80,9 +95,10 @@ Galaxy 클래스에서 이부분을 처리한다.
 
 ### APOD API
 
-간단하게 try...catch와 async...await, 그리고 fetch를 이용해 데이터를 받아오도록 구현했다.
-
----
+- fetch를 이용해 NASA APOD 데이터를 받아왔지만, 단순히 오늘을 기준으로 5일 전까지의 데이터를 요청하면 특정 날짜에 데이터가 없을 경우 원하는 개수만큼 받아오지 못하는 문제가 있었다.
+- API 자체적으로 count 파라미터를 사용하면 지정한 개수의 데이터를 받을 수 있지만, 이 방식은 무작위(random)로 데이터를 반환하기 때문에 나의 의도와는 맞지 않았다.
+- 이를 해결하기 위해 while 반복문을 사용하여 실제 응답된 데이터 개수를 기준으로 부족한 만큼 이전 날짜 범위를 확장하며 추가 요청하는 방식으로 구현했다.
+- 이렇게 하면 API의 호출 횟수가 늘어나는 단점이 있고, 약간 비효율적이지만 특정 날짜가 비어 있어도 자동으로 과거 데이터를 보완해 항상 정확히 지정된 개수의 데이터를 확보할 수 있다.
 
 ## React로 전환
 
@@ -104,9 +120,12 @@ Galaxy 클래스에서 이부분을 처리한다.
     | @react-three/drei | R3F용 컴포넌트/유틸 | 반복 구현 없이 OrbitControls, Stars 등 바로 사용 |
 
 - useFrame
-  - React Three Fiber(R3F)에서 매 프레임마다 호출되는 훅으로, Three.js의 requestAnimationFrame과 유사하게 동작하며, 렌더 루프에 로직을 등록할 수 있다.
+
+  - React Three Fiber(R3F)에서 매 프레임마다 호출되는 훅으로, Three.js의 `requestAnimationFrame`과 유사하게 동작하며, 렌더 루프에 로직을 등록할 수 있다.
   - 반드시 `<Canvas>` 내부 컴포넌트에서만 사용 가능하다. 이걸 모르고 외부에서 호출했다가 아래와 같은 오류가 발생했었다.
-    `R3F: Hooks can only be used within the Canvas component!`
+
+    > R3F: Hooks can only be used within the Canvas component!
+
 - Bloom 효과
 
   - 기존에 나선 은하가 너무 심심해보여서 Bloom 효과를 줬었다. 이 효과 사용 방법이 React에서는 설정 방법이 조금 달랐다
@@ -147,8 +166,6 @@ Galaxy 클래스에서 이부분을 처리한다.
 
 ## 개선할 점
 
-- 나선 은하 수정
 - 모바일 반응형
-- API 데이터 표현 방법 변경
 - 테스트 코드 작성
 - 이미지 처리 수정
