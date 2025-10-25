@@ -25,8 +25,8 @@ export const Detail = ({ apodData, onClose }: Props) => {
           <IoCloseSharp />
         </button>
 
-        <h2 className='text-2xl md:text-4xl font-bold mb-2 text-shadow-md'>{title}</h2>
-        <p className='text-right text-sm md:text-base mb-4'>{date}</p>
+        <h2 className='text-[clamp(1.5rem,2.5vw,2.5rem)] font-bold mb-2 text-shadow-md'>{title}</h2>
+        <p className='text-right text-[clamp(0.8rem,1.2vw,1rem)] mb-4'>{date.replaceAll('-', '.')}</p>
 
         {media_type === 'image' ? (
           <img className='w-full h-96 max-h-96 object-contain mb-4' loading='lazy' src={url} alt={title} />
@@ -41,7 +41,7 @@ export const Detail = ({ apodData, onClose }: Props) => {
           </div>
         ) : null}
 
-        <p className='text-sm md:text-base leading-relaxed'>{explanation}</p>
+        <p className='text-sm text-[clamp(0.9rem,1.4vw,1.1rem)] leading-relaxed'>{explanation}</p>
       </div>
     </>
   );
