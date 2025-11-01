@@ -6,9 +6,13 @@
 
 ### [🌌 Explore Universe](https://today-s-universe.vercel.app/)
 
+**🚨사용한 APOD API가 자체 오류로 인해 동작하지 않을 수 있다.** (아래는 NASA API의 안내문(?))
+
+> ⚠ Service Outage Notice: This API is currently experiencing an unscheduled outage. We are working to resolve the issue as quickly as possible. We apologize for any inconvenience.
+
 ## 설명
 
-> Three.js를 이용해 3D 우주 공간을 구현하고, 오늘의 NASA 우주 사진 정보를 알려주는 사이트
+> Three.js를 이용해 3D 우주 공간을 구현하고, 5일치 우주 사진과 정보를 알려주는 사이트
 
 프로젝트 주제를 고민하던 중 NASA Open APIs를 알게 되었다. 단순히 API 데이터를 받아와 화면에 보여주는 방식은 이미 여러 번 해왔던 방식이라 새로운 접근이 필요하다고 생각했다. 그래서 이전부터 사용해 보고 싶었던 Three.js를 활용해 우주 배경을 구현하고, 그 위에 API로 받아온 데이터를 시각화하는 방법을 떠올렸다. 이는 직접 개발하는 나에게도 새로운 경험이 될 뿐만 아니라, 사용자에게도 색다른 경험을 줄 수 있는 방식이라고 생각했다.
 
