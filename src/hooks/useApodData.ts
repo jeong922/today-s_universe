@@ -10,7 +10,8 @@ export const useApodData = (count: number = 5) => {
       return await APOD(count as number);
     },
     retry: false,
-    staleTime: 0,
+    staleTime: 30 * 60 * 1000,
+    retryOnMount: false,
   });
 
   return { data: data || [], error, isLoading, isError, refetch };

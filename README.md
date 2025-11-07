@@ -14,7 +14,7 @@
 
 > Three.js를 이용해 3D 우주 공간을 구현하고, 5일치 우주 사진과 정보를 알려주는 사이트
 
-프로젝트 주제를 고민하던 중 NASA Open APIs를 알게 되었다. 단순히 API 데이터를 받아와 화면에 보여주는 방식은 이미 여러 번 해왔던 방식이라 새로운 접근이 필요하다고 생각했다. 그래서 이전부터 사용해 보고 싶었던 Three.js를 활용해 우주 배경을 구현하고, 그 위에 API로 받아온 데이터를 시각화하는 방법을 떠올렸다. 이는 직접 개발하는 나에게도 새로운 경험이 될 뿐만 아니라, 사용자에게도 색다른 경험을 줄 수 있는 방식이라고 생각했다.
+프로젝트 주제를 고민하던 중 NASA Open APIs를 알게 되었다. 단순히 API 데이터를 받아와 화면에 보여주는 방식은 이미 여러 번 해왔던 방식이라 새로운 접근이 필요하다고 생각했다. 그래서 이전부터 사용해 보고 싶었던 Three.js를 활용해 우주 배경을 구현하고, 그 위에 API로 받아온 데이터를 시각화하는 방법을 떠올렸다. 이는 직접 개발하는 나에게도 새로운 경험이 될 뿐만 아니라, 사용자에게도 색다른 경험을 줄 수 있는 방식이라고 생각했다. ~~그리고 Three.js에 대한 로망이 있다.~~
 
 ## 기술
 
@@ -108,10 +108,34 @@
 ### APOD API
 
 - fetch를 이용해 NASA APOD 데이터를 받아왔지만, 단순히 오늘을 기준으로 5일 전까지의 데이터를 요청하면 특정 날짜에 데이터가 없을 경우 원하는 개수만큼 받아오지 못하는 문제가 있었다.
-- API 자체적으로 count 파라미터를 사용하면 지정한 개수의 데이터를 받을 수 있지만, 이 방식은 무작위(random)로 데이터를 반환하기 때문에 나의 의도와는 맞지 않았다.
-- 이를 해결하기 위해 while 반복문을 사용하여 실제 응답된 데이터 개수를 기준으로 부족한 만큼 이전 날짜 범위를 확장하며 추가 요청하는 방식으로 구현했다.
-- 이렇게 하면 API의 호출 횟수가 늘어나는 단점이 있고, 약간 비효율적이지만 특정 날짜가 비어 있어도 자동으로 과거 데이터를 보완해 항상 정확히 지정된 개수의 데이터를 확보할 수 있다.
+- API 자체에서 count 파라미터를 사용하면 원하는 개수만큼 데이터를 한 번에 받을 수 있으므로, 가장 효율적인 방법으로 판단되어 최종적으로 이 방식을 선택하였다. (완벽하게 원하는 결과는 아니다.)
 - 데이터 요청과 상태관리를 `@tanstack/react-query`를 이용해 구현했고, 데이터 요청 로직을 커스텀 훅(`useApodData`)으로 분리하여 UI 부분과 API 호출 로직을 분리하였다.
+
+### NASA API 자체 문제인한 긴 로딩 시간 해결
+
+- NASA API 자체 문제로 인해 정상적으로 응답하지 않아 React Query 옵션을 수정해보았지만 약 1분 동안 로딩 화면만 표시되는 문제가 발생했다, 이를 해결하기 위해 `AbortController`와 `setTimeout`을 사용하여 요청에 타임아웃을 설정하고, 일정 시간이 지나면 강제로 요청을 취소하도록 구현하였다. (README를 작성하는 시점에 API가 동작하지 않아서 정상적으로 동작하는지 테스트는 못해봤다.)
+- 이렇게 되면 인터넷이 느릴 경우에도 요청이 취소되는 문제가 발생할 것으로 예상되어 최대 대기 시간을 30초로 설정했다.
+
+```tsx
+export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
+  const TIMEOUT_MS = 30000; // 요청 최대 30초 기다림
+  const controller = new AbortController(); // fetch 요청을 강제로 취소
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS); // 30초 후에 controller.abort()를 호출해서 fetch 요청을 강제로 중단
+
+  try {
+    const response = await fetch(
+      `https://api.nasa.gov/planetary/apod?api_key=${import.meta.env.VITE_API_KEY}&count=${count}`,
+      { signal: controller.signal }
+    );
+
+    // ...
+  } catch (error) {
+    clearTimeout(timeoutId); // 타이머 clear
+    console.error('Error fetching NASA APOD:', error);
+    throw error;
+  }
+}
+```
 
 ## React로 전환
 
