@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:vercel": "vercel dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -41,6 +42,7 @@
     "@swc/core": "^1.13.5",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
+    "@vercel/node": "^8.1.2",
     "@vitejs/plugin-react-swc": "^4.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
