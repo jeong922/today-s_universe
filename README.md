@@ -61,15 +61,21 @@ npm run dev
 
 > `npm run dev`는 Vite 개발 서버만 실행하기 때문에 Vercel Function을 사용하는 NASA APOD API 요청은 정상적으로 동작하지 않는다.
 
-## 화면
+## 🖥️ 화면
 
 ### 시작 화면
+우주 공간에 진입하기 전 프로젝트의 타이틀과 시작 버튼을 보여주는 화면이다.
+<img width="700" height="394" alt="시작 장면" src="https://github.com/user-attachments/assets/fea66c9d-cdb4-4b50-b0e2-5362902e35ff" />
+
 
 ### 우주 배경
+Three.js와 R3F로 구현한 3D 우주 공간으로, 마우스를 이용해 화면을 회전하거나 확대·축소하며 탐색할 수 있다.
+<img width="700" height="394" alt="줌인아웃" src="https://github.com/user-attachments/assets/a940e67f-9de5-40e7-9e21-8595a9beff23" />
+
 
 ### 데이터 상세 모달
-
----
+우주 공간에 배치된 구체를 선택하면 해당 APOD의 이미지 또는 영상과 제목, 날짜, 설명을 확인할 수 있다.
+<img width="700" height="394" alt="상세페이지" src="https://github.com/user-attachments/assets/681b759e-8c74-4e84-bffd-5d6de84eb638" />
 
 ## 📜 설계
 
@@ -111,7 +117,7 @@ npm run dev
   - 배경 별: 1000 ~ 2000개 사이로 설정한다.
   - 은하 입자: 50000개 이하로 설정한다.
 
-## 🖥️ 구현
+## ⌨️ 구현
 
 ### 타이틀 구현
 
