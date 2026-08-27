@@ -25,6 +25,42 @@
 - Three.js는 GPU 기반 게임 및 기타 그래픽 앱을 브라우저에서 바로 실행할 수 있는 JavaScript 기반의 WebGL 엔진으로, 브라우저에서 3D 장면을 그리기 위한 다양한 기능과 API를 제공한다.
 - WebGL은 강력하지만 너무 로우레벨이라 개발에 시간이 오래걸리지만, Three.js는 이를 보완해 더 빠르고 직관적인 3D 웹 개발을 가능하게 하기 때문에 선택하게 되었다.
 
+## 실행 방법
+
+### 설치
+
+저장소를 clone한 후 의존성 패키지를 설치한다.
+
+```bash
+npm install
+```
+
+### 환경변수 설정
+
+NASA APOD API를 사용하기 위해 프로젝트 루트에 `.env.local` 파일을 생성하고 NASA API Key를 설정한다.
+
+```env
+NASA_API_KEY=YOUR_NASA_API_KEY
+```
+
+NASA API Key는 [NASA Open APIs](https://api.nasa.gov/)에서 발급받을 수 있다.
+
+### 개발 서버 실행
+
+Vercel Function을 포함한 전체 기능을 로컬에서 실행한다.
+
+```bash
+npm run dev:vercel
+```
+
+프론트엔드만 실행하려면 다음 명령어를 사용한다.
+
+```bash
+npm run dev
+```
+
+> `npm run dev`는 Vite 개발 서버만 실행하기 때문에 Vercel Function을 사용하는 NASA APOD API 요청은 정상적으로 동작하지 않는다.
+
 ## 화면
 
 ### 시작 화면
@@ -49,7 +85,6 @@
     - 각 별마다 다른 위상으로 깜빡이도록 구현한다.
   - 카메라 기준으로 가까운 별은 크게, 작은 별은 작게 표현한다.
 - 나선 은하
-
   - Three.js를 이용해 구현한다.
   - 팽대부
     - 은하 중심으로 별이 가장 밀집되어 있는 영역이다.
@@ -111,31 +146,103 @@
 - API 자체에서 count 파라미터를 사용하면 원하는 개수만큼 데이터를 한 번에 받을 수 있으므로, 가장 효율적인 방법으로 판단되어 최종적으로 이 방식을 선택하였다. (완벽하게 원하는 결과는 아니다.)
 - 데이터 요청과 상태관리를 `@tanstack/react-query`를 이용해 구현했고, 데이터 요청 로직을 커스텀 훅(`useApodData`)으로 분리하여 UI 부분과 API 호출 로직을 분리하였다.
 
-### NASA API 자체 문제인한 긴 로딩 시간 해결
+### NASA API 응답 지연에 따른 긴 로딩 시간 개선
 
-- NASA API 자체 문제로 인해 정상적으로 응답하지 않아 React Query 옵션을 수정해보았지만 약 1분 동안 로딩 화면만 표시되는 문제가 발생했다, 이를 해결하기 위해 `AbortController`와 `setTimeout`을 사용하여 요청에 타임아웃을 설정하고, 일정 시간이 지나면 강제로 요청을 취소하도록 구현하였다. (README를 작성하는 시점에 API가 동작하지 않아서 정상적으로 동작하는지 테스트는 못해봤다.)
-- 이렇게 되면 인터넷이 느릴 경우에도 요청이 취소되는 문제가 발생할 것으로 예상되어 최대 대기 시간을 30초로 설정했다.
+- NASA API가 정상적으로 응답하지 않는 상황에서 약 1분 동안 로딩 화면만 표시되는 문제가 발생했다. React Query 옵션만으로는 해당 문제를 해결하기 어려워 `AbortController`와 `setTimeout`을 사용해 요청에 타임아웃을 설정하고, 일정 시간이 지나면 요청을 강제로 취소하도록 구현했다.
+
+- 네트워크 환경이 느린 경우에도 요청이 취소될 수 있다는 점을 고려하여 최대 대기 시간을 30초로 설정했다.
 
 ```tsx
 export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
-  const TIMEOUT_MS = 30000; // 요청 최대 30초 기다림
-  const controller = new AbortController(); // fetch 요청을 강제로 취소
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS); // 30초 후에 controller.abort()를 호출해서 fetch 요청을 강제로 중단
+  const TIMEOUT_MS = 30000;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(
-      `https://api.nasa.gov/planetary/apod?api_key=${import.meta.env.VITE_API_KEY}&count=${count}`,
-      { signal: controller.signal }
-    );
+    const response = await fetch(`/api/apod?count=${count}`, {
+      signal: controller.signal,
+    });
 
     // ...
   } catch (error) {
-    clearTimeout(timeoutId); // 타이머 clear
     console.error('Error fetching NASA APOD:', error);
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 ```
+
+- 요청이 실패하거나 타임아웃으로 취소되면 React Query의 에러 상태를 이용해 Error UI를 표시하도록 구현했다. 또한 `refetch`를 전달해 사용자가 직접 데이터 요청을 다시 시도할 수 있도록 처리했다.
+
+```tsx
+const { data, isLoading, error, refetch } = useApodData(5);
+
+// ...
+
+{
+  isLoading && <Loading />;
+}
+{
+  error && <Error onRetry={refetch} />;
+}
+```
+
+이를 통해 NASA API의 응답이 지연되거나 일시적인 장애가 발생하더라도 로딩 화면이 계속 유지되지 않고, 일정 시간이 지나면 사용자에게 오류 상태를 안내하고 재시도할 수 있도록 개선했다.
+
+### APOD API Key 노출 문제 개선
+
+기존에는 `src/api/api.ts`에서 NASA APOD API를 직접 호출하고, Vite 환경변수를 통해 API Key를 사용했다.
+
+```tsx
+const response = await fetch(
+  `https://api.nasa.gov/planetary/apod?api_key=${import.meta.env.VITE_API_KEY}&count=${count}`,
+);
+```
+
+환경변수로 API Key를 관리하고 있었지만, Vite에서 `VITE_` 접두사가 붙은 환경변수는 클라이언트 번들에 포함되기 때문에 브라우저 개발자 도구에서 API Key를 확인할 수 있는 문제가 있었다.
+
+이를 해결하기 위해 별도의 백엔드 서버를 구축하는 대신 Vercel Functions를 이용해 서버 측에서 NASA API를 호출하도록 구조를 변경했다.
+
+```text
+- 기존
+Browser
+  ↓
+src/api/api.ts
+  ↓ API Key를 포함해 요청
+NASA APOD API
+
+
+- 개선
+Browser
+  ↓
+src/api/api.ts
+  ↓ /api/apod
+Vercel Function (api/apod.ts)
+  ↓ API Key를 포함해 요청
+NASA APOD API
+```
+
+기존 `src/api/api.ts`에서는 NASA API를 직접 호출하지 않고 Vercel Function의 `/api/apod` 엔드포인트만 호출하도록 변경했다.
+
+```tsx
+const response = await fetch(`/api/apod?count=${count}`, {
+  signal: controller.signal,
+});
+```
+
+프로젝트 루트의 `api/apod.ts`에 Vercel Function을 생성하고, 해당 함수에서 서버 환경변수에 저장된 API Key를 이용해 NASA APOD API를 호출하도록 구현했다.
+
+```tsx
+const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.NASA_API_KEY}&count=${count}`, {
+  signal: controller.signal,
+});
+```
+
+기존 클라이언트에서 사용하던 `VITE_API_KEY`를 제거하고, Vercel Function에서만 접근하는 서버 환경변수 `NASA_API_KEY`로 분리했다. `VITE_` 접두사가 붙은 환경변수는 클라이언트에서 접근할 수 있도록 빌드 결과에 포함되지만, `NASA_API_KEY`는 Vercel Function에서 `process.env.NASA_API_KEY`를 통해 서버 측에서만 사용한다.
+
+이를 통해 브라우저에서는 `/api/apod` 요청만 확인할 수 있고, 실제 NASA API 요청과 API Key는 Vercel Function 내부에서 처리되도록 개선했다.
 
 ## React로 전환
 
@@ -146,7 +253,6 @@ export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
 ### 전환 과정
 
 - React 설정
-
   - ⚠️ 처음해보는 작업이라 이런 방식으로 전환하는게 아닐 수 있다.
   - 버전 관리를 위해 Git 브랜치를 새로 만들어 (dev-react) 작업했다.
   - Vite를 이용해 React를 셋팅했고 순차적으로 전환하기 위해 기존 코드는 legacy 폴더 안으로 옮겨줬다.
@@ -157,14 +263,12 @@ export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
     | @react-three/drei | R3F용 컴포넌트/유틸 | 반복 구현 없이 OrbitControls, Stars 등 바로 사용 |
 
 - useFrame
-
   - React Three Fiber(R3F)에서 매 프레임마다 호출되는 훅으로, Three.js의 `requestAnimationFrame`과 유사하게 동작하며, 렌더 루프에 로직을 등록할 수 있다.
   - 반드시 `<Canvas>` 내부 컴포넌트에서만 사용 가능하다. 이걸 모르고 외부에서 호출했다가 아래와 같은 오류가 발생했었다.
 
     > R3F: Hooks can only be used within the Canvas component!
 
 - Bloom 효과
-
   - 기존에 나선 은하가 너무 심심해보여서 Bloom 효과를 줬었다. 이 효과 사용 방법이 React에서는 설정 방법이 조금 달랐다
   - 기존 Three.js 코드는 아래와 같다. 기존 구현에서는 EffectComposer와 UnrealBloomPass를 직접 사용하여 Bloom 효과를 추가했다.
 
@@ -189,7 +293,6 @@ export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
     ```
 
   ### React 전환 후 Vercel 배포 오류 해결
-
   - Rollup Linux 바이너리 누락 문제
     - Vercel로 배포 시도 중 아래와 같은 에러가 발생했다.
       > Error: Cannot find module '@rollup/rollup-linux-x64-gnu'Require stack: /vercel/path0/node_modules/rollup/dist/native.js
@@ -203,11 +306,7 @@ export default async function APOD(count: number = 5): Promise<ApodResponse[]> {
 
 ## 🚀 개선할 점
 
-- 구현 및 학습 내용 문서화
-  - 주요 구현 과정과 학습 내용을 정리하고 문서화 필요
-- 모바일 반응형 개선
-  - 기본적인 반응형은 동작하지만, Three.js로 구현된 부분의 모바일 대응이 추가로 필요
-- 테스트 코드 작성
-  - 주요 기능에 대한 단위 테스트 및 통합 테스트 작성 필요
-- 이미지 처리 개선
-  - API에서 제공하는 이미지 크기·용량 차이로 인해 이미지가 다단 형태로 로딩되는 문제 개선 필요
+- [ ] 모바일 환경의 Three.js 렌더링 및 인터랙션 최적화
+- [ ] 주요 기능 테스트 코드 작성
+- [ ] APOD 이미지 크기·용량 차이로 발생하는 로딩 UX 개선
+- [x] NASA APOD API 장애 시 fallback UI 및 데이터 처리 개선
