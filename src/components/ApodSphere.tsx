@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { ApodResponse } from '../api/api';
-import { useFrame } from '@react-three/fiber';
 
 interface Props {
   position: {
@@ -16,40 +16,38 @@ interface Props {
 
 export const ApodSphere = ({ position, color = '#fdfb74', apodData, onClick }: Props) => {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const material = new THREE.MeshStandardMaterial({
-    color,
-    emissive: color,
-    emissiveIntensity: 0.5,
-    metalness: 0,
-    roughness: 0.7,
-  });
 
   useEffect(() => {
-    if (meshRef.current) {
-      meshRef.current.userData = apodData;
-    }
+    if (!meshRef.current) return;
+
+    meshRef.current.userData = apodData;
   }, [apodData]);
 
   useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.002;
-    }
+    if (!meshRef.current) return;
+
+    meshRef.current.rotation.y += 0.002;
   });
+
+  const handlePointerOver = () => {
+    document.body.style.cursor = 'pointer';
+  };
+
+  const handlePointerOut = () => {
+    document.body.style.cursor = 'default';
+  };
 
   return (
     <mesh
-      onClick={onClick}
-      onPointerOver={() => {
-        document.body.style.cursor = 'pointer';
-      }}
-      onPointerOut={() => {
-        document.body.style.cursor = 'default';
-      }}
       ref={meshRef}
       position={[position.x, position.y, position.z]}
-      material={material}
+      onClick={onClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
     >
       <sphereGeometry args={[20, 64, 32]} />
+
+      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} metalness={0} roughness={0.7} />
     </mesh>
   );
 };
