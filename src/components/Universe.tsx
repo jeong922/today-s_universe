@@ -1,18 +1,18 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { useState } from 'react';
 import { Starfield } from './Starfield';
 import { Galaxy } from './Galaxy';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import type { ApodResponse } from '../api/api';
 import { ApodSphere } from './ApodSphere';
-import { useState } from 'react';
 import { Detail } from './Detail';
 import { ModalPortal } from './ModalPortal';
-import { useApodData } from '../hooks/useApodData';
 import { Loading } from './Loading';
 import { Error } from './Error';
+import type { ApodResponse } from '../api/api';
+import { useApodData } from '../hooks/useApodData';
 
-const positions = [
+const POSITIONS = [
   { x: 500, y: 100, z: 100 },
   { x: 350, y: 100, z: 300 },
   { x: -400, y: -60, z: 600 },
@@ -20,7 +20,19 @@ const positions = [
   { x: 200, y: -100, z: -600 },
 ];
 
-const colors = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
+const COLORS = ['#fffd98', '#8ddbff', '#f885a8', '#b3f774', '#c9a7ff'];
+
+const GALAXY_PARAMS = {
+  count: 50000,
+  size: 0.01,
+  radius: 350,
+  branches: 5,
+  spin: 5,
+  randomness: 0.15,
+  randomnessPower: 1.8,
+  insideColor: '#d4a15f',
+  outsideColor: '#5744ff',
+};
 
 export const Universe = () => {
   const { data, isLoading, error, refetch } = useApodData(5);
@@ -38,6 +50,7 @@ export const Universe = () => {
   return (
     <>
       <Canvas
+        dpr={[1, 1.5]}
         camera={{
           position: [300, 200, 1000],
           fov: 75,
@@ -49,28 +62,17 @@ export const Universe = () => {
         <directionalLight intensity={1} position={[200, 300, 200]} />
 
         <Starfield />
-        <Galaxy
-          galaxyParams={{
-            count: 50000,
-            size: 0.01,
-            radius: 350,
-            branches: 5,
-            spin: 5,
-            randomness: 0.15,
-            randomnessPower: 1.8,
-            insideColor: '#d4a15f',
-            outsideColor: '#5744ff',
-          }}
-        />
+
+        <Galaxy galaxyParams={GALAXY_PARAMS} />
 
         {!isLoading &&
           data
-            .slice(0, positions.length)
+            .slice(0, POSITIONS.length)
             .map((item, index) => (
               <ApodSphere
                 key={item.date}
-                position={positions[index]}
-                color={colors[index]}
+                position={POSITIONS[index]}
+                color={COLORS[index]}
                 apodData={item}
                 onClick={() => onClick(item)}
               />
