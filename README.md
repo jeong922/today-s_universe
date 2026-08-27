@@ -115,36 +115,46 @@ npm run dev
 
 ### 타이틀 구현
 
-- 처음에는 이부분도 Three.js를 이용해 구현하려고 했다. 처음 계획은 오늘의 우주는? 이라는 타이틀이 뜨고 시작 버튼을 누르면 글자의 점들이 흩어져서 배경 별이 되는걸 생각했는데 생각보다 복잡하여 간단하게 일반적인 HTML 태그를 이용해 구현하고 DOM을 조작하는 형태로 변경하였다.
-- 이후 API 데이터가 영어로 되어 있어 번역기를 붙일까 했지만 일단은 일관성을 이유로 Explore Universe로 프로젝트 타이틀을 변경했다.
-- 개인적 미적인 감각이 부족하다고 느껴, AI의 도움을 받아 Framer Motion을 이용해 시각적인 효과를 더했다.
+- 처음에는 타이틀도 Three.js를 이용해 구현하려고 했다. `오늘의 우주는?`이라는 타이틀이 나타나고 시작 버튼을 누르면 글자를 구성하던 점들이 흩어져 배경의 별이 되는 연출을 생각했지만, 예상보다 구현이 복잡하여 일반적인 HTML 요소와 DOM을 조작하는 방식으로 변경했다.
+
+- 이후 NASA APOD API에서 제공하는 데이터가 영어로 되어 있어 번역 기능을 추가하는 것도 고민했지만, 전체적인 언어와 분위기의 일관성을 위해 프로젝트 타이틀을 `Explore Universe`로 변경했다.
+
+- 타이틀 화면의 시각적인 연출을 보완하기 위해 AI의 도움을 받아 Framer Motion을 활용한 애니메이션을 적용했다.
 
 ### Three.js 설정
 
-- Universe 클래스는 Three.js를 기반으로 한 3D 우주 시뮬레이션의 최상위 클래스이다. 씬(Scene), 카메라(Camera), 조명(Light), 렌더러(Renderer), 포스트 프로세싱(Post-Processing)과 우주 구성 요소(별, 은하, 사진 구)를 모두 관리하고 있다.
-- 초기에는 JavaScript를 이용해 기본 사용법을 확인했고 이후에 React로 전환하면서 Universe 컴포넌트를와 R3F(React Three Fiber)를 이용해 구현했다.
+- 초기 JavaScript 구현에서는 `Universe` 클래스를 중심으로 Scene, Camera, Light, Renderer, Post-Processing과 별, 은하 등의 요소를 관리했다. React 전환 후에는 R3F의 `Canvas`를 중심으로 각 요소를 `Starfield`, `Galaxy`, `ApodSphere` 등의 컴포넌트로 분리했다.
 
 ### 배경 별 뿌리기
 
-- 순수한 JavaScript와 Three.js로 구현한 코드를 React에서 R3F를 이용해 Starfield 컴포넌트를 구현해 별 배경을 표현했다.
-- 별의 위치와 색상을 랜덤으로 배치하고, ShaderMaterial을 활용해 반짝임 효과를 적용했다.
-- `@react-three/drei`가 Stars라는 미리 만들어진 3D 별 배경 컴포넌트가 포함되어 있어 그것을 사용하는 것도 하나의 방법이지만 확인해보니 원하는 형태가 아니라서 그냥 만든 것을 사용했다.
+- JavaScript와 Three.js로 구현했던 별 배경을 React 전환 후 R3F의 `Starfield` 컴포넌트로 다시 구현했다.
+
+- 별의 위치와 색상을 랜덤으로 배치하고, `ShaderMaterial`을 활용해 반짝임 효과를 적용했다.
+
+- `@react-three/drei`에서 제공하는 `Stars` 컴포넌트도 확인했지만, 별의 위치·색상과 반짝임 효과를 직접 제어하고 싶어 기존에 구현한 `Starfield`를 R3F 환경에 맞게 전환해 사용했다.
 
 ### 나선 은하 구현
 
-- 순수한 JavaScript와 Three.js로 구현한 코드를 React에서 R3F를 이용해 Galaxy 컴포넌트를 구현해 나선 은하를 구현했다.
-- galaxyParams props로 별 갯수, 크기, 반지름, 나선 팔, 회전, 색상 등을 설정가능하도록 구현했다.
-- 별의 개수만큼 for문을 실행하여 각 별의 위치, 색상, 크기를 계산하고 최적화를 위해 Float32Array에 저장했다. 불필요한 재계산을 방지하기 위해 useMemo를 사용했다.
-  - Float32Array 32비트 부동소수점(float) 값만 저장할 수 있는 타입화 배열로 메모리 구조가 연속적이어서 GPU로 바로 전달하기 적합한 구조이다.
-  - Three.js에서 BufferGeometry를 만들 때, vertex 위치나 색상을 GPU로 전달해야 하는데 Float32Array는 바로 GPU 버퍼로 복사가 가능하여 변환과정이 필요없다.
-- 각 별은 나선 팔(branch)과 중심에서의 거리(r)에 비례한 회전 각도(spinAngle)를 적용하고, Y축과 XZ 평면에 랜덤 오프셋을 더해 3D 나선 형태를 구성했다.
-- useFrame로 나선 은하를 회전시키는 애니메이션을 구현했다.
+- JavaScript와 Three.js로 구현했던 나선 은하를 React 전환 후 R3F의 `Galaxy` 컴포넌트로 다시 구현했다.
+
+- `galaxyParams` props를 통해 별 개수, 크기, 반지름, 나선 팔, 회전, 색상 등을 설정할 수 있도록 구현했다.
+
+- 50,000개의 별에 대한 위치, 색상, 크기를 계산하고, 각 별을 개별 객체로 생성하는 대신 데이터를 `Float32Array`에 저장하여 `BufferGeometry`의 attribute로 전달했다. 또한 위치와 색상 등의 데이터를 렌더링마다 다시 계산하지 않도록 생성 로직을 `useMemo`로 메모이제이션했다.
+  - `Float32Array`는 32비트 부동소수점 값을 연속된 메모리 공간에 저장하는 TypedArray로, Three.js의 `BufferAttribute`를 통해 vertex 위치나 색상 등의 데이터를 GPU 버퍼로 전달하는 데 적합하다.
+
+- 각 별에는 나선 팔(branch)과 중심에서의 거리(r)에 비례한 회전 각도(spinAngle)를 적용하고, Y축과 XZ 평면에 랜덤 오프셋을 추가해 입체적인 나선 형태를 구성했다.
+
+- R3F의 `useFrame`을 이용해 매 프레임 은하를 조금씩 회전시키는 애니메이션을 구현했다.
 
 ### APOD API
 
-- fetch를 이용해 NASA APOD 데이터를 받아왔지만, 단순히 오늘을 기준으로 5일 전까지의 데이터를 요청하면 특정 날짜에 데이터가 없을 경우 원하는 개수만큼 받아오지 못하는 문제가 있었다.
-- API 자체에서 count 파라미터를 사용하면 원하는 개수만큼 데이터를 한 번에 받을 수 있으므로, 가장 효율적인 방법으로 판단되어 최종적으로 이 방식을 선택하였다. (완벽하게 원하는 결과는 아니다.)
-- 데이터 요청과 상태관리를 `@tanstack/react-query`를 이용해 구현했고, 데이터 요청 로직을 커스텀 훅(`useApodData`)으로 분리하여 UI 부분과 API 호출 로직을 분리하였다.
+- `fetch`를 이용해 NASA APOD 데이터를 받아왔지만, 단순히 오늘을 기준으로 이전 5일 동안의 데이터를 요청하면 특정 날짜에 데이터가 없을 경우 원하는 개수만큼 받아오지 못하는 문제가 있었다.
+
+- 개선 방법으로 최근 날짜부터 순차적으로 데이터를 요청하고, APOD 데이터가 5개가 될 때까지 반복해서 요청하는 방식도 시도했다. 하지만 특정 날짜에 데이터가 없을 경우 추가 요청이 계속 발생하고, 원하는 개수의 데이터를 확보하기 위해 여러 번의 네트워크 요청이 필요할 수 있어 비효율적이라고 판단했다.
+
+- 최종적으로 APOD API에서 제공하는 `count` 파라미터를 사용하면 지정한 개수의 데이터를 한 번에 요청할 수 있어 최종적으로 이 방식을 사용했다. 다만 `count`는 랜덤 APOD 데이터를 반환하기 때문에 처음 의도했던 '최근 5개의 APOD'와는 차이가 있다.
+
+- 데이터 요청과 서버 상태 관리는 `@tanstack/react-query`를 이용해 구현했고, 데이터 요청 로직을 커스텀 훅(`useApodData`)으로 분리하여 UI와 API 요청 로직의 역할을 분리했다.
 
 ### NASA API 응답 지연에 따른 긴 로딩 시간 개선
 
@@ -244,6 +254,76 @@ const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${proc
 
 이를 통해 브라우저에서는 `/api/apod` 요청만 확인할 수 있고, 실제 NASA API 요청과 API Key는 Vercel Function 내부에서 처리되도록 개선했다.
 
+### APOD 이미지 로딩 UX 개선
+
+- NASA APOD API에서 제공하는 이미지는 날짜마다 크기와 용량이 달라, 이미지 응답이 느린 경우 상세 모달에서 이미지가 점진적으로 표시되는 문제가 있었다.
+
+- 이미지 자체를 압축하거나 변환하는 대신, 브라우저의 이미지 로딩 방식과 UI를 개선하여 이미지가 로딩되는 동안의 사용자 경험과 레이아웃 안정성을 개선했다.
+
+- `<img>`에 기존 `loading="lazy"`와 함께 `decoding="async"`를 적용하여 이미지 디코딩이 렌더링을 불필요하게 차단하지 않도록 했다.
+
+```tsx
+<img
+  src={url}
+  alt={title}
+  loading='lazy'
+  decoding='async'
+  onLoad={() => setIsImageLoading(false)}
+  onError={() => setIsImageLoading(false)}
+/>
+```
+
+- 이미지 로딩 상태를 별도로 관리하여 이미지가 준비되기 전에는 Loading UI를 표시하고, 로딩이 완료되면 opacity transition을 이용해 자연스럽게 이미지가 나타나도록 구현했다.
+
+```tsx
+const [isImageLoading, setIsImageLoading] = useState(true);
+
+{
+  isImageLoading && (
+    <div className='absolute inset-0 flex items-center justify-center'>
+      <div className='h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-white/80' />
+    </div>
+  );
+}
+```
+
+- 기존에는 콘텐츠 크기에 따라 모달의 높이가 달라질 수 있었기 때문에 모달 높이를 viewport 기준으로 고정하고, 내부 콘텐츠만 스크롤되도록 변경했다.
+
+```tsx
+<section className='h-[90dvh] overflow-hidden'>
+  <div className='detail-scroll h-full overflow-y-auto'>{/* ... */}</div>
+</section>
+```
+
+- 스크롤바가 생성되거나 사라질 때 콘텐츠 영역의 너비가 미세하게 변경되는 현상을 방지하기 위해 `scrollbar-gutter: stable`을 적용했다. 또한 우주 테마의 모달 디자인에 맞게 스크롤바 스타일을 별도로 지정했다.
+
+```css
+.detail-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-gutter: stable;
+}
+
+.detail-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.detail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.detail-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+}
+
+.detail-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+```
+
+이를 통해 이미지 응답이 느린 상황에서도 현재 로딩 상태를 사용자에게 명확하게 전달하고, 이미지 로딩 및 스크롤 발생으로 인한 레이아웃 변화를 줄여 상세 모달의 사용성을 개선했다.
+
 ## React로 전환
 
 ### 전환 이유는?
@@ -253,9 +333,8 @@ const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${proc
 ### 전환 과정
 
 - React 설정
-  - ⚠️ 처음해보는 작업이라 이런 방식으로 전환하는게 아닐 수 있다.
   - 버전 관리를 위해 Git 브랜치를 새로 만들어 (dev-react) 작업했다.
-  - Vite를 이용해 React를 셋팅했고 순차적으로 전환하기 위해 기존 코드는 legacy 폴더 안으로 옮겨줬다.
+  - React로 기존 Three.js 프로젝트를 전환하는 작업은 처음이라, 기존 코드를 한 번에 제거하지 않고 legacy 폴더에 유지한 상태에서 기능을 하나씩 옮기는 방식으로 진행했다.
   - React에서 Three.js를 사용하기 위해 fiber(R3F)와 drei를 설치해줬다.
     | 라이브러리 | 역할 | 필요성 |
     | ------------------ | ------------------- | ------------------------------------- |
@@ -308,5 +387,5 @@ const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${proc
 
 - [ ] 모바일 환경의 Three.js 렌더링 및 인터랙션 최적화
 - [ ] 주요 기능 테스트 코드 작성
-- [ ] APOD 이미지 크기·용량 차이로 발생하는 로딩 UX 개선
+- [x] APOD 이미지 크기·용량 차이로 발생하는 로딩 UX 개선
 - [x] NASA APOD API 장애 시 fallback UI 및 데이터 처리 개선
